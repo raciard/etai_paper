@@ -1,0 +1,28 @@
+\section{Introduction}
+Fine-grained visual recognition---telling apart 200 visually similar bird
+species---is a demanding setting in which \emph{why} a model made a decision is
+often as important as the decision itself. Concept Bottleneck Models
+(CBMs)~\cite{koh2020concept} address this by forcing the prediction to pass
+through an intermediate layer of human-interpretable concepts: an image is first
+mapped to a vector of concepts (the class-level bird attributes of CUB-200-2011%
+~\cite{wah2011caltech} selected following \citet{koh2020concept}, directly
+supervised), and only then to a species. This exposes concept-level explanations
+and enables test-time intervention on individual concepts.
+
+The standard CBM, however, leaves two problems open. First, the concepts are
+predicted from the \emph{whole} image: because concepts and classes are correlated
+in the data, a whole-image predictor can infer a concept such as \emph{wing color}
+from features that are diagnostic of the \emph{species} rather than of the wing.
+The concept vector then leaks class information and the explanation becomes
+\emph{circular}---the concept is ``predicted'' from a representation that already
+encodes the answer, so its activation does not faithfully reflect the local
+evidence it names, and concept interventions no longer behave as intended.
+Second, the label space is flat and the model is judged by accuracy alone, which
+treats every mistake as equally bad: confusing two warblers counts the same as
+confusing a warbler with an albatross. Our contribution is a study that (i)
+predicts each concept from a crop of the part it describes, localized by
+\emph{Keypoint R-CNN}, to break this circularity and force every concept to be
+grounded in its own evidence; (ii) adds a coarse-to-fine structure to
+color/pattern concepts; (iii) equips the label space with a WordNet-based severity
+metric and a post-hoc decision rule; and (iv) analyses the resulting accuracy,
+severity and interpretability trade-offs on CUB-200-2011.

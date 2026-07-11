@@ -1,0 +1,20 @@
+\section{Research gaps}
+Three gaps motivate our work. \emph{(i) Prediction circularity.} In a standard
+CBM the concepts are predicted from the whole image, so a concept can be inferred
+through global, class-correlated shortcuts instead of the evidence it
+names~\cite{margeloiu2021concept}. The bottleneck then becomes circular and leaky:
+the concept prediction is entangled with the class prediction, which undermines
+the faithfulness of the explanation and the reliability of concept interventions.
+Approaches that ground each concept on the specific region it describes---so that
+the concept prediction cannot short-circuit through the class---remain
+comparatively rare, and this is the primary motivation for our part-conditioned
+design. \emph{(ii) Structure studied in isolation.} Structure in the concept space
+(grounding, coarse-to-fine concepts) and in the label space (a taxonomy over
+classes) is usually studied separately; combining them inside a single supervised
+CBM is under-explored. \emph{(iii) Severity is not measured.} CBM evaluation
+typically reports accuracy only, ignoring \emph{error severity}---precisely the
+quantity a class taxonomy is expected to improve. We address these by grounding
+concepts to break circularity, structuring both the concept and the label space,
+and evaluating with an explicit severity metric while holding model capacity
+fixed, so that observed differences are attributable to the bottleneck structure
+rather than to the feature extractor.

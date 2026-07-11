@@ -1,0 +1,92 @@
+\section{Methodology}
+\textbf{Setup.} We work on CUB-200-2011~\cite{wah2011caltech} (200 species,
+bounding-box crops). As concepts we use the class-level attributes obtained with
+the procedure of \citet{koh2020concept}: the noisy instance-level CUB attributes
+are aggregated to the class level by \emph{majority voting}---an attribute is set
+for a class when it is present in the majority of that class's images---and
+attributes that remain rare across classes are discarded, yielding the denoised
+set of $109$ concepts we predict (directly supervised). All variants share the
+same feature extractor---a ConvNeXt-Tiny~\cite{liu2022convnet} backbone trained
+from scratch---so that any difference reflects the bottleneck structure and not
+model capacity. A no-bottleneck black-box (a ConvNeXt-Tiny backbone with a linear
+head mapping the image directly to the species) is kept as a conceptual reference
+for the accuracy cost of imposing interpretability. A linear classifier maps the
+concept vector to the 200 species in every concept-based variant.
+
+\textbf{Flat CBM.} A whole-image ConvNeXt-Tiny encoder predicts all $109$ concepts
+at once (sigmoid), with no part localization; the concept vector then feeds the
+species classifier.
+
+\textbf{Part-conditioned CBM: breaking prediction circularity.} To stop a concept
+from being predicted through whole-image, class-correlated shortcuts, we localize
+the evidence for each concept \emph{before} predicting it. A frozen Keypoint R-CNN
+detector localizes 12 anatomical parts (beak, wings, tail, \dots) together with
+their visibility, producing one crop per part plus a global crop of the bird. The
+part crops and the global crop are encoded by ConvNeXt-Tiny backbones (one shared
+across all parts, one dedicated to the global crop). Each attribute is then
+predicted \emph{only} from the crop of the part it names: the head for \emph{wing
+color} sees only the wing, so the concept must be grounded in
+its own local evidence and cannot short-circuit through features that merely
+correlate with the species. The concept prediction is thus decoupled from the
+class prediction and the bottleneck is faithful rather than circular. Parts that
+are not localized are replaced by a learned ``absent'' embedding. By construction
+this grounding is expected to cost some accuracy, precisely because it removes the
+whole-image shortcuts a flat model would otherwise exploit.
+
+\textbf{Coarse-to-fine concepts.} On top of the grounded concepts we add hierarchy
+\emph{within} the concept space: for the color/pattern attribute groups, the fine
+value is not predicted directly---a small coarse head first estimates a coarse
+family (e.g.\ warm / cool / neutral / iridescent), whose posterior is concatenated
+to the part embedding to condition the fine head that predicts the specific value.
+The hierarchy acts on the concepts, not on the final species output.
+
+\textbf{Training the classifier: independent vs.\ sequential.} The linear species
+classifier on top of the concept vector is trained in two regimes that we compare
+throughout. In the \emph{independent} regime it is fit on the ground-truth concept
+labels; in the \emph{sequential} regime it is fit on the concept probabilities
+that the concept stage actually predicts, so that it can learn to compensate for
+the concept predictor's systematic errors. Both are evaluated on the real concept
+predictions, and the concept stage itself is identical in the two regimes.
+
+\textbf{Label-space hierarchy and mistake severity.} The 200 species are the
+leaves of a taxonomic tree $\mathcal{T}$ obtained by mapping each class onto
+WordNet (species\,$\rightarrow$\,genus\,$\rightarrow$\,family\,$\rightarrow
+\cdots$)~\cite{miller1995wordnet}. For two nodes $a,b$ let $\mathrm{LCA}(a,b)$ be
+their lowest common ancestor in $\mathcal{T}$, and let the \emph{height} $h(v)$ of
+a node $v$ be the number of edges on the longest path from $v$ down to a leaf of
+its subtree, so that $h(\cdot)=0$ for a leaf. Following
+\citet{bertinetto2020making}, the severity of predicting $\hat{y}$ for a
+ground-truth class $y$ is the height of their LCA,
+\begin{equation}
+  s(y,\hat{y}) \;=\; h\!\left(\mathrm{LCA}(y,\hat{y})\right),
+  \label{eq:cost}
+\end{equation}
+which is $0$ for a correct prediction, $1$ when the two species share the genus,
+$2$ when they share only the family, and larger for more distant confusions. The
+mistake severity we report is the mean of this cost over the $N$ test examples,
+\begin{equation}
+  \mathrm{Sev} \;=\; \frac{1}{N}\sum_{i=1}^{N} s\!\left(y_i,\hat{y}_i\right)
+  \;=\; \frac{1}{N}\sum_{i=1}^{N} h\!\left(\mathrm{LCA}(y_i,\hat{y}_i)\right),
+  \label{eq:sev}
+\end{equation}
+so that correct predictions contribute nothing and the score captures jointly how
+often the model errs and how far, in the taxonomy, its errors fall (lower is
+better).
+
+\textbf{Severity-aware decision (CRM).} The \emph{same} cost drives the decision
+rule. Let $p(c\mid x)$ be the model's posterior over the $C{=}200$ classes,
+obtained from the species logits through a softmax with temperature $T$ tuned on a
+held-out validation set. Instead of the arg\,max, CRM~\cite{karthik2021nocost}
+returns the class of minimum \emph{expected} severity,
+\begin{equation}
+  \hat{y}_{\mathrm{CRM}}
+  \;=\; \arg\min_{k\in\{1,\dots,C\}} \sum_{c=1}^{C} s(k,c)\,p(c\mid x),
+  \label{eq:crm}
+\end{equation}
+so that, when the model is uncertain, it prefers a class taxonomically close to
+the likely candidates over a far one. CRM is fully post-hoc and requires no
+retraining.
+
+\textbf{Metrics.} We report top-1 accuracy and the mistake severity of
+Eq.~\eqref{eq:sev} (lower is better), the latter capturing how semantically close
+the errors are.

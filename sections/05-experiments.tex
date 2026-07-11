@@ -1,0 +1,84 @@
+\section{Experiments and analysis}
+Table~\ref{tab:results} reports accuracy and severity for the black-box reference
+and the three concept-based variants, under the arg\,max and CRM rules.
+
+\begin{table}[h]
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{4pt}
+  \caption{Top-1 accuracy (\%, higher is better) and average WordNet mistake
+  severity of Eq.~\eqref{eq:sev} (lower is better) on the CUB-200-2011 test set
+  ($5{,}794$ images), under the arg\,max and CRM decision rules. The black-box
+  (no bottleneck) is the reference; the concept-based variants are shown for the
+  independent and sequential classifier.}
+  \label{tab:results}
+  \begin{tabular}{llcccc}
+    \toprule
+    & & \multicolumn{2}{c}{arg\,max} & \multicolumn{2}{c}{CRM} \\
+    \cmidrule(lr){3-4}\cmidrule(lr){5-6}
+    Variant & Classifier & Acc. & Sev. & Acc. & Sev. \\
+    \midrule
+    Black-box (reference) & --- & \textbf{85.81} & \textbf{0.327} & 85.54 & 0.342 \\
+    \midrule
+    \multirow{2}{*}{Flat}
+      & Independent & 73.90 & 0.658 & 73.90 & 0.658 \\
+      & Sequential  & 78.94 & 0.523 & 78.15 & 0.550 \\
+    \addlinespace
+    \multirow{2}{*}{Part-conditioned}
+      & Independent & 74.32 & 0.734 & 73.99 & 0.727 \\
+      & Sequential  & 76.39 & 0.649 & 76.10 & 0.641 \\
+    \addlinespace
+    \multirow{2}{*}{\;+ hierarchical concepts}
+      & Independent & 73.28 & 0.774 & 72.78 & 0.779 \\
+      & Sequential  & 74.63 & 0.720 & 74.49 & 0.704 \\
+    \bottomrule
+  \end{tabular}
+  \par\vspace{2pt}
+  {\scriptsize For reference on the severity scale, the WordNet cost matrix has a
+  maximum of $7.0$ and a random classifier attains an expected severity of $5.59$.}
+\end{table}
+
+\textbf{The interpretability bottleneck has a real cost.} The black-box beats
+every concept-based variant on \emph{both} metrics---accuracy $85.8\%$ against
+$74$--$79\%$, and severity $0.327$ against $0.52$--$0.78$---even though its
+checkpoint was early-stopped (epoch $18/30$, so its converged numbers would likely
+be higher still). This is the cost of interpretability documented by
+\citet{koh2020concept}: routing the prediction through ${\sim}109$ hand-annotated
+concepts is a genuine information bottleneck that forbids the visual shortcuts a
+free network can exploit. The concept-based models pay accuracy and severity for
+something the black-box cannot provide---an inspectable set of intermediate
+concepts.
+
+\textbf{The sequential classifier dominates the independent one.} Training the
+species classifier on the concept stage's own predictions (sequential) rather than
+on the ground-truth concept labels (independent) improves top-1 accuracy for every
+variant---strongly for Flat ($73.9 \rightarrow 78.9$) and by a smaller margin for
+the part-conditioned models ($74.3 \rightarrow 76.4$ and $73.3 \rightarrow
+74.6$)---and lowers severity throughout. Learning on the real, noisy concept
+probabilities lets the classifier absorb the concept stage's systematic errors,
+whereas the independent classifier, fit on clean labels, is mismatched to the
+predictions it faces at test time. We therefore read the effect of grounding off
+the sequential column, where the models are strongest.
+
+\textbf{Grounding concepts costs accuracy---as expected.} Within the sequential
+classifier, predicting concepts from their own part lowers top-1 accuracy from
+$78.9\%$ to $76.4\%$, and adding the coarse-to-fine structure lowers it further to
+$74.6\%$; average severity rises in step ($0.52 \rightarrow 0.65 \rightarrow
+0.72$). This is consistent with our motivation rather than a failure: the flat
+model reaches higher accuracy partly by exploiting whole-image, class-correlated
+shortcuts that part conditioning deliberately removes. The concept-space design
+therefore \emph{trades} a little accuracy for a bottleneck that is faithful---each
+concept grounded in the region it names, so its prediction is not circular---and
+hierarchically organized for color and pattern, the intended interpretability
+benefit that by construction is not visible in accuracy.
+
+\textbf{CRM helps only the uncertain, grounded models.} The severity-aware rule
+lowers severity on the part-conditioned model in \emph{both} regimes ($0.734
+\rightarrow 0.727$ and $0.649 \rightarrow 0.641$) at an accuracy cost below $0.4$
+points, but does nothing for Flat-independent ($0.658$) and slightly worsens the
+sharper models---Flat-sequential ($0.523 \rightarrow 0.550$) and, most tellingly,
+the highly accurate black-box ($0.327 \rightarrow 0.342$)---where there is little
+error mass for a re-ranking to improve. The gain is therefore real but targeted,
+and it depends on calibration: with the default temperature ($T{=}1$) CRM degrades
+both metrics, and only after temperature scaling (here $T{\approx}1.35$) does it
+behave as intended~\cite{karthik2021nocost}.

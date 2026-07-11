@@ -1,0 +1,87 @@
+\documentclass[sigconf, nonacm]{acmart}
+
+%%
+%% \BibTeX command to typeset BibTeX logo in the docs
+\AtBeginDocument{%
+  \providecommand\BibTeX{{%
+    Bib\TeX}}}
+
+\usepackage{multirow}
+\graphicspath{{figures/}}
+
+%% These commands are for a PROCEEDINGS abstract or paper.
+\acmConference[Explainable and Trustworthy AI - Project]{}{}{}
+
+\begin{document}
+
+\title{Hierarchy-Aware Concept Bottleneck Models for Fine-Grained Bird Classification}
+
+%%
+%% The "author"
+\author{Name Surname}
+\affiliation{%
+  \institution{Politecnico di Torino}
+  \city{Turin}
+  \country{Italy}
+}
+
+\author{Name Surname}
+\affiliation{%
+  \institution{Politecnico di Torino}
+  \city{Turin}
+  \country{Italy}
+}
+\author{Name Surname}
+\affiliation{%
+  \institution{Politecnico di Torino}
+  \city{Turin}
+  \country{Italy}
+}
+
+%%
+\begin{abstract}
+Concept Bottleneck Models (CBMs) route a prediction through a layer of
+human-interpretable concepts, but both the concept layer and the label space
+are usually treated as flat, unstructured sets, and evaluation reduces to
+accuracy---so a mistake between two closely related birds is scored exactly like
+a mistake between two unrelated ones. We study whether injecting hierarchical
+structure into a supervised CBM improves interpretability and the semantic
+quality of its errors on fine-grained bird recognition (CUB-200-2011),
+independently of raw accuracy. We add structure along two axes. In the
+\emph{concept space} we (i) predict each concept from the anatomical part it
+names, breaking the \emph{prediction circularity} by which a whole-image concept
+predictor can infer a concept from global, class-correlated shortcuts rather than
+from its own visual evidence, and (ii) give color/pattern attributes a
+coarse-to-fine structure. In the \emph{label space} we map the 200 species onto a
+WordNet taxonomy that yields a Lowest-Common-Ancestor (LCA) mistake-severity
+metric and a post-hoc, retraining-free decision rule that minimizes expected
+severity instead of taking the arg\,max. Holding the feature extractor fixed
+across all variants, we find that the concept-space interventions do not raise
+accuracy---and slightly increase average severity---while making the bottleneck
+faithful and more interpretable, whereas the calibrated label-space decision rule
+lowers mistake severity at negligible accuracy cost. The benefit of this added
+structure thus concentrates in error quality and interpretability rather than in
+accuracy.
+\end{abstract}
+
+%% Keywords.
+\keywords{Concept Bottleneck Models, Interpretability, Fine-grained
+classification, Class hierarchy, Mistake severity, CUB-200-2011}
+
+%%
+\maketitle
+
+\input{sections/01-introduction}
+\input{sections/02-related-work}
+\input{sections/03-research-gaps}
+\input{sections/04-methodology}
+\input{sections/05-experiments}
+\input{sections/06-conclusions}
+
+%%
+%% The next two lines define the bibliography style to be used, and
+%% the bibliography file.
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{bib/biblio}
+
+\end{document}

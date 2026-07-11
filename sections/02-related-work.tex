@@ -1,0 +1,30 @@
+\section{Related work}
+\textbf{Concept bottlenecks.} CBMs~\cite{koh2020concept} introduced the
+image$\rightarrow$concepts$\rightarrow$class factorization and the associated
+concept-level interpretability and intervention. Our concept layer follows their
+supervised, class-level attribute setup. Subsequent analyses, however, show that
+concepts predicted from the whole image are not necessarily learned as intended
+and can encode (``leak'') class information beyond the evidence they
+name~\cite{margeloiu2021concept}, which motivates predicting each concept from a
+localized region.
+
+\textbf{Hierarchy in the concept space.}
+\citet{pittino2023hierarchical} aggregate concepts hierarchically for explainable
+fine classification, motivating grouping structure over concepts;
+\citet{sun2024boosting} add supervised, hierarchical concept learning with
+structural constraints between coarse and fine concepts. Hierarchical
+prototypes~\cite{hase2019interpretable} pursue interpretable recognition through
+an explicit top-down structure. These works inform our part-grounded and
+coarse-to-fine concept design.
+
+\textbf{Hierarchy in the label space and better mistakes.}
+\citet{bertinetto2020making} formalize mistake severity through the LCA of the
+predicted and true class in a semantic hierarchy and propose hierarchy-aware
+training losses. \citet{karthik2021nocost} show that severity can be reduced
+purely at test time, without retraining, by choosing the class of minimum
+expected risk (Conditional Risk Minimization, CRM)---the mechanism we adopt for
+our label-space axis.
+
+\textbf{Positioning.} The survey of \citet{poeta2025concept} frames hierarchical
+concept structure as an open direction in concept-based explainability, which our
+two-axis study addresses directly.
