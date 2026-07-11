@@ -4,6 +4,9 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -24,3 +27,13 @@ jobs:
           name: paper-pdf
           path: build/main.pdf
           if-no-files-found: error
+
+      - name: Publish "latest" release
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: Latest build
+          body: Automatically built from ${{ github.sha }}.
+          make_latest: true
+          files: build/main.pdf
