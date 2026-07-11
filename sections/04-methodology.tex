@@ -87,6 +87,9 @@ so that, when the model is uncertain, it prefers a class taxonomically close to
 the likely candidates over a far one. CRM is fully post-hoc and requires no
 retraining.
 
-\textbf{Metrics.} We report top-1 accuracy and the mistake severity of
-Eq.~\eqref{eq:sev} (lower is better), the latter capturing how semantically close
-the errors are.
+\textbf{Metrics.} At the species level we report top-1 accuracy and the mistake
+severity of Eq.~\eqref{eq:sev} (lower is better), the latter capturing how
+semantically close the errors are. At the concept level we separately report
+binary accuracy and macro-averaged $F_1$ over the $109$ attributes for the
+concept encoder alone, to check whether a numerically higher concept score
+reflects genuinely grounded evidence rather than a class-correlated shortcut.

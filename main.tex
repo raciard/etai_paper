@@ -56,12 +56,16 @@ coarse-to-fine structure. In the \emph{label space} we map the 200 species onto 
 WordNet taxonomy that yields a Lowest-Common-Ancestor (LCA) mistake-severity
 metric and a post-hoc, retraining-free decision rule that minimizes expected
 severity instead of taking the arg\,max. Holding the feature extractor fixed
-across all variants, we find that the concept-space interventions do not raise
-accuracy---and slightly increase average severity---while making the bottleneck
-faithful and more interpretable, whereas the calibrated label-space decision rule
-lowers mistake severity at negligible accuracy cost. The benefit of this added
-structure thus concentrates in error quality and interpretability rather than in
-accuracy.
+across all variants, we find that an unconstrained black-box baseline beats every
+concept-based variant on both accuracy and severity, quantifying the cost of the
+bottleneck itself; within that budget, the concept-space interventions do not
+raise accuracy---and slightly increase average severity---while making the
+bottleneck faithful and more interpretable, and concept-level evaluation confirms
+that the flat model's higher apparent concept quality partly reflects the same
+class-correlated shortcuts responsible for its higher accuracy rather than better
+grounding. The calibrated label-space decision rule, in turn, lowers mistake
+severity at negligible accuracy cost. The benefit of this added structure thus
+concentrates in error quality and interpretability rather than in accuracy.
 \end{abstract}
 
 %% Keywords.
