@@ -1,8 +1,9 @@
 \section{Experiments and analysis}
 Table~\ref{tab:results} reports accuracy and severity for the black-box reference
 and the three concept-based variants under the arg\,max and CRM decision rules.
-Table~\ref{tab:concepts} then evaluates the concept layer in isolation, without
-the species classifier built on top of it.
+Table~\ref{tab:severity-breakdown} decomposes that severity into how often each
+model errs and how bad each error is. Table~\ref{tab:concepts} then evaluates the
+concept layer in isolation, without the species classifier built on top of it.
 
 \begin{table}[h]
   \centering
@@ -51,6 +52,53 @@ information bottleneck that prevents the network from exploiting visual shortcut
 The concept-based models sacrifice accuracy and severity in exchange for
 something the black-box cannot offer---an inspectable set of intermediate
 concepts.
+
+\begin{table}[h]
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{4pt}
+  \caption{Semantic mistake-severity breakdown under the arg\,max rule (test set,
+  $5{,}794$ images). Sev.\ (err.) is the mean severity of Eq.~\eqref{eq:sev}
+  computed only over the misclassified examples, decomposing Table~\ref{tab:results}'s
+  severity into how often the model errs (its accuracy) and how bad each error is.
+  Same-genus / Same-family / Far report the share of \emph{errors} whose LCA height
+  is $1$ / $2$ / $\geq 3$ respectively, following the mistake-severity bucketing of
+  \citet{bertinetto2020making}.}
+  \label{tab:severity-breakdown}
+  \begin{tabular}{llcccc}
+    \toprule
+    Variant & Classifier & Sev.\ (err.) & Same-genus & Same-family & Far \\
+    \midrule
+    Black-box (reference) & --- & \textbf{2.307} & \textbf{29.3\%} & 10.8\% & \textbf{59.9\%} \\
+    \midrule
+    \multirow{2}{*}{Flat}
+      & Independent & 2.521 & 28.0\% & 10.0\% & 62.0\% \\
+      & Sequential  & 2.483 & 25.7\% & 10.7\% & 63.6\% \\
+    \addlinespace
+    \multirow{2}{*}{Part-conditioned}
+      & Independent & 2.857 & 23.8\% & 10.1\% & 66.1\% \\
+      & Sequential  & 2.749 & 24.3\% & 10.5\% & 65.2\% \\
+    \addlinespace
+    \multirow{2}{*}{\;+ hierarchical concepts}
+      & Independent & 2.899 & 23.7\% & 10.0\% & 66.3\% \\
+      & Sequential  & 2.839 & 24.3\% & 11.0\% & 64.7\% \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\textbf{Errors decompose into how often and how badly.} Table~\ref{tab:severity-breakdown}
+splits the arg\,max severity of Table~\ref{tab:results} into how often each model
+errs and, conditioned on an error, how severe it is and where in the taxonomy it
+lands. The black-box's errors are, on average, the mildest of any variant
+(Sev.\ (err.)$=2.307$) and the most likely to stay within the true genus
+($29.3\%$, against $23.7$--$28.0\%$ for the concept-based models). Grounding
+concepts on their part therefore does not only cost accuracy in aggregate:
+conditioned on making a mistake, the part-conditioned and hierarchical models'
+errors are also proportionally farther in the taxonomy (Far share
+$65.2$--$66.3\%$, against $59.9\%$ for the black-box and $62.0$--$63.6\%$ for
+Flat)---a cost the aggregate severity of Table~\ref{tab:results} already reflects
+but that this decomposition makes explicit, rather than leaving it implicit in a
+single averaged number.
 
 \textbf{The sequential classifier consistently outperforms the independent one.}
 Training the species classifier on the concept encoder's own predictions
