@@ -1,6 +1,9 @@
 \section{Experiments and analysis}
 Table~\ref{tab:results} reports accuracy and severity for the black-box reference
 and the three concept-based variants, under the arg\,max and CRM rules.
+Table~\ref{tab:concepts} then evaluates the concept layer itself, independently of
+the species classifier built on top of it, and Table~\ref{tab:hierarchy} isolates
+the coarse-to-fine gate's own behaviour.
 
 \begin{table}[h]
   \centering
@@ -71,6 +74,72 @@ therefore \emph{trades} a little accuracy for a bottleneck that is faithful---ea
 concept grounded in the region it names, so its prediction is not circular---and
 hierarchically organized for color and pattern, the intended interpretability
 benefit that by construction is not visible in accuracy.
+
+\begin{table}[h]
+  \centering
+  \footnotesize
+  \caption{Concept-level prediction quality on the CUB-200-2011 test set: binary
+  accuracy and macro-averaged $F_1$ over the $109$ class-level attributes, for
+  each concept encoder alone (independent of which species classifier is later
+  built on top of it).}
+  \label{tab:concepts}
+  \begin{tabular}{lccc}
+    \toprule
+    Concept encoder & \# concepts & Acc.\ (\%) & Macro-$F_1$ \\
+    \midrule
+    Flat                          & 109 & \textbf{95.66} & \textbf{0.876} \\
+    Part-conditioned              & 109 & 91.36 & 0.758 \\
+    \; + hierarchical concepts    & 109 & 91.24 & 0.753 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\textbf{Higher concept scores are not necessarily more faithful.}
+Table~\ref{tab:concepts} isolates concept quality from the species classifier
+built on top of it. The flat encoder attains a higher macro-$F_1$ ($0.876$) than
+the part-conditioned one ($0.758$), even though the latter is the one that breaks
+prediction circularity. This is consistent with our motivation rather than a
+contradiction: the flat encoder's higher concept score is itself evidence that it
+can infer an attribute from whole-image, class-correlated shortcuts---e.g.\
+recognizing \emph{wing color} from cues diagnostic of the species rather than of
+the wing---the same mechanism that inflates its species accuracy in
+Table~\ref{tab:results}. The part-conditioned encoder, restricted to the crop of
+the part each concept names, cannot use those shortcuts, so its lower concept
+score is a more faithful measure of whether the concept is actually grounded in
+its own evidence rather than in a class-correlated proxy. Adding the coarse-to-fine
+gate leaves concept quality essentially unchanged ($0.758 \rightarrow 0.753$): the
+added structure is not bought with a further quality cost.
+
+\begin{table}[h]
+  \centering
+  \footnotesize
+  \caption{Coarse-to-fine diagnostics on the $22$ color/pattern attribute groups
+  of the hierarchical part-conditioned model (test set, macro-averaged across
+  groups). Coarse acc.: family predicted by the coarse head vs.\ the family of
+  the true fine value. Same-family$\mid$error: among cases where the fine value
+  is wrong, the fraction whose predicted value still falls in the true value's
+  coarse family.}
+  \label{tab:hierarchy}
+  \begin{tabular}{ccc}
+    \toprule
+    Coarse acc.\ (\%) & Fine acc.\ (\%) & Same-family $\mid$ error (\%) \\
+    \midrule
+    96.28 & 84.64 & 65.65 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\textbf{The coarse-to-fine gate degrades gracefully.} Table~\ref{tab:hierarchy}
+isolates the color/pattern groups the hierarchy governs. The coarse head alone is
+highly accurate ($96.3\%$ macro-averaged family accuracy), confirming that the
+family-level distinction (e.g.\ warm vs.\ cool color) is easy to ground even where
+the exact fine value is not. More importantly, when the fine head \emph{is}
+wrong, its prediction still lands in the correct coarse family $65.7\%$ of the
+time---well above chance for most of these groups' fine-value vocabularies---so a
+wrong concept explanation from this model is, on average, wrong in a small,
+nameable way (``a warm color, but not the exact one'') rather than arbitrarily.
+This is the interpretability benefit the coarse-to-fine design targets, and it is
+not visible in Table~\ref{tab:concepts}'s aggregate scores.
 
 \textbf{CRM helps only the uncertain, grounded models.} The severity-aware rule
 lowers severity on the part-conditioned model in \emph{both} regimes ($0.734
