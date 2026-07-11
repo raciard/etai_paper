@@ -1,7 +1,7 @@
 \section{Experiments and analysis}
 Table~\ref{tab:results} reports accuracy and severity for the black-box reference
-and the three concept-based variants, under the arg\,max and CRM rules.
-Table~\ref{tab:concepts} then evaluates the concept layer itself, independently of
+and the three concept-based variants under the arg\,max and CRM decision rules.
+Table~\ref{tab:concepts} then evaluates the concept layer in isolation, without
 the species classifier built on top of it.
 
 \begin{table}[h]
@@ -40,39 +40,41 @@ the species classifier built on top of it.
   maximum of $7.0$ and a random classifier attains an expected severity of $5.59$.}
 \end{table}
 
-\textbf{The interpretability bottleneck has a real cost.} The black-box beats
-every concept-based variant on \emph{both} metrics---accuracy $85.8\%$ against
-$74$--$79\%$, and severity $0.327$ against $0.52$--$0.78$---even though its
-checkpoint was early-stopped (epoch $18/30$, so its converged numbers would likely
-be higher still). This is the cost of interpretability documented by
-\citet{koh2020concept}: routing the prediction through ${\sim}109$ hand-annotated
-concepts is a genuine information bottleneck that forbids the visual shortcuts a
-free network can exploit. The concept-based models pay accuracy and severity for
-something the black-box cannot provide---an inspectable set of intermediate
+\textbf{The interpretability bottleneck has a measurable cost.} The black-box
+outperforms every concept-based variant on \emph{both} metrics: accuracy reaches
+$85.8\%$ versus $74$--$79\%$, and severity drops to $0.327$ versus
+$0.52$--$0.78$. Note that the black-box checkpoint was early-stopped at epoch
+$18/30$, so its converged performance would likely be higher still. This gap is
+the cost of interpretability already documented by \citet{koh2020concept}:
+routing the prediction through ${\sim}109$ hand-annotated concepts is a real
+information bottleneck that prevents the network from exploiting visual shortcuts.
+The concept-based models sacrifice accuracy and severity in exchange for
+something the black-box cannot offer---an inspectable set of intermediate
 concepts.
 
-\textbf{The sequential classifier dominates the independent one.} Training the
-species classifier on the concept stage's own predictions (sequential) rather than
-on the ground-truth concept labels (independent) improves top-1 accuracy for every
-variant---strongly for Flat ($73.9 \rightarrow 78.9$) and by a smaller margin for
-the part-conditioned models ($74.3 \rightarrow 76.4$ and $73.3 \rightarrow
-74.6$)---and lowers severity throughout. Learning on the real, noisy concept
-probabilities lets the classifier absorb the concept stage's systematic errors,
-whereas the independent classifier, fit on clean labels, is mismatched to the
-predictions it faces at test time. We therefore read the effect of grounding off
-the sequential column, where the models are strongest.
+\textbf{The sequential classifier consistently outperforms the independent one.}
+Training the species classifier on the concept encoder's own predictions
+(sequential) rather than on the ground-truth labels (independent) raises top-1
+accuracy across the board: by about $5$ points for Flat ($73.9 \to 78.9$) and by
+$2$--$1.3$ points for the part-conditioned variants ($74.3 \to 76.4$ and
+$73.3 \to 74.6$). Severity decreases accordingly. The explanation is
+straightforward: the sequential classifier is trained on the noisy concept
+probabilities it will actually see at test time, so it can absorb the concept
+encoder's systematic biases, whereas the independent classifier, fit on clean
+labels, faces a train--test mismatch. Because the sequential regime gives each
+variant its best performance, we read the effect of grounding from that column.
 
-\textbf{Grounding concepts costs accuracy---as expected.} Within the sequential
-classifier, predicting concepts from their own part lowers top-1 accuracy from
-$78.9\%$ to $76.4\%$, and adding the coarse-to-fine structure lowers it further to
-$74.6\%$; average severity rises in step ($0.52 \rightarrow 0.65 \rightarrow
-0.72$). This is consistent with our motivation rather than a failure: the flat
-model reaches higher accuracy partly by exploiting whole-image, class-correlated
-shortcuts that part conditioning deliberately removes. The concept-space design
-therefore \emph{trades} a little accuracy for a bottleneck that is faithful---each
-concept grounded in the region it names, so its prediction is not circular---and
-hierarchically organized for color and pattern, the intended interpretability
-benefit that by construction is not visible in accuracy.
+\textbf{Grounding concepts reduces accuracy---by design.} Within the sequential
+regime, predicting concepts from their own body part lowers top-1 accuracy from
+$78.9\%$ to $76.4\%$; adding the coarse-to-fine structure brings it down further
+to $74.6\%$. Average severity rises in tandem ($0.52 \to 0.65 \to 0.72$). This
+drop is expected rather than a shortcoming: the flat model reaches higher
+accuracy partly because it can exploit whole-image, class-correlated shortcuts
+that part conditioning deliberately removes. The concept-space design therefore
+trades a few accuracy points for a bottleneck that is faithful---each concept is
+grounded in the body region it names and cannot circularly infer the answer from
+global cues---and that organises colour and pattern concepts hierarchically, an
+interpretability benefit not visible in accuracy numbers.
 
 \begin{table}[h]
   \centering
@@ -93,29 +95,28 @@ benefit that by construction is not visible in accuracy.
   \end{tabular}
 \end{table}
 
-\textbf{Higher concept scores are not necessarily more faithful.}
-Table~\ref{tab:concepts} isolates concept quality from the species classifier
-built on top of it. The flat encoder attains a higher macro-$F_1$ ($0.876$) than
-the part-conditioned one ($0.758$), even though the latter is the one that breaks
-prediction circularity. This is consistent with our motivation rather than a
-contradiction: the flat encoder's higher concept score is itself evidence that it
-can infer an attribute from whole-image, class-correlated shortcuts---e.g.\
-recognizing \emph{wing color} from cues diagnostic of the species rather than of
-the wing---the same mechanism that inflates its species accuracy in
-Table~\ref{tab:results}. The part-conditioned encoder, restricted to the crop of
-the part each concept names, cannot use those shortcuts, so its lower concept
-score is a more faithful measure of whether the concept is actually grounded in
-its own evidence rather than in a class-correlated proxy. Adding the coarse-to-fine
-gate leaves concept quality essentially unchanged ($0.758 \rightarrow 0.753$): the
-added structure is not bought with a further quality cost.
+\textbf{Higher concept scores do not imply more faithful concepts.}
+Table~\ref{tab:concepts} evaluates concept quality in isolation. The flat
+encoder achieves a macro-$F_1$ of $0.876$, well above the part-conditioned
+encoder's $0.758$---even though the latter is the one that actually breaks
+prediction circularity. Far from contradicting our thesis, this gap
+\emph{supports} it: the flat encoder can infer an attribute from whole-image cues
+that are diagnostic of the species (e.g.\ recognising \emph{wing color} from the
+overall plumage pattern), the same shortcut mechanism that inflates its species
+accuracy in Table~\ref{tab:results}. The part-conditioned encoder, forced to work
+from the crop of the relevant body part, cannot rely on those shortcuts; its
+lower score is therefore a more honest reflection of whether the concept is truly
+grounded in its own evidence. Adding the coarse-to-fine gate barely changes
+concept quality ($0.758 \to 0.753$): the extra structure does not come at a
+further cost.
 
-\textbf{CRM helps only the uncertain, grounded models.} The severity-aware rule
-lowers severity on the part-conditioned model in \emph{both} regimes ($0.734
-\rightarrow 0.727$ and $0.649 \rightarrow 0.641$) at an accuracy cost below $0.4$
-points, but does nothing for Flat-independent ($0.658$) and slightly worsens the
-sharper models---Flat-sequential ($0.523 \rightarrow 0.550$) and, most tellingly,
-the highly accurate black-box ($0.327 \rightarrow 0.342$)---where there is little
-error mass for a re-ranking to improve. The gain is therefore real but targeted,
-and it depends on calibration: with the default temperature ($T{=}1$) CRM degrades
-both metrics, and only after temperature scaling (here $T{\approx}1.35$) does it
-behave as intended~\cite{karthik2021nocost}.
+\textbf{CRM helps the uncertain, grounded models.} The severity-aware decision
+rule lowers severity on the part-conditioned model in \emph{both} classifier
+regimes ($0.734 \to 0.727$, $0.649 \to 0.641$) at less than $0.4$ points of
+accuracy. For the sharper, more confident models, however, CRM has little room
+to improve: it leaves Flat-independent unchanged ($0.658$) and slightly worsens
+Flat-sequential ($0.523 \to 0.550$) and the black-box ($0.327 \to 0.342$), where
+there is almost no error mass for a re-ranking to act on. The benefit is
+therefore real but selective, and it depends on calibration: at the default
+temperature ($T{=}1$) CRM degrades both metrics; only after temperature scaling
+(here $T \approx 1.35$) does it behave as intended~\cite{karthik2021nocost}.
