@@ -2,8 +2,7 @@
 Table~\ref{tab:results} reports accuracy and severity for the black-box reference
 and the three concept-based variants, under the arg\,max and CRM rules.
 Table~\ref{tab:concepts} then evaluates the concept layer itself, independently of
-the species classifier built on top of it, and Table~\ref{tab:hierarchy} isolates
-the coarse-to-fine gate's own behaviour.
+the species classifier built on top of it.
 
 \begin{table}[h]
   \centering
@@ -109,37 +108,6 @@ score is a more faithful measure of whether the concept is actually grounded in
 its own evidence rather than in a class-correlated proxy. Adding the coarse-to-fine
 gate leaves concept quality essentially unchanged ($0.758 \rightarrow 0.753$): the
 added structure is not bought with a further quality cost.
-
-\begin{table}[h]
-  \centering
-  \footnotesize
-  \caption{Coarse-to-fine diagnostics on the $22$ color/pattern attribute groups
-  of the hierarchical part-conditioned model (test set, macro-averaged across
-  groups). Coarse acc.: family predicted by the coarse head vs.\ the family of
-  the true fine value. Same-family$\mid$error: among cases where the fine value
-  is wrong, the fraction whose predicted value still falls in the true value's
-  coarse family.}
-  \label{tab:hierarchy}
-  \begin{tabular}{ccc}
-    \toprule
-    Coarse acc.\ (\%) & Fine acc.\ (\%) & Same-family $\mid$ error (\%) \\
-    \midrule
-    96.28 & 84.64 & 65.65 \\
-    \bottomrule
-  \end{tabular}
-\end{table}
-
-\textbf{The coarse-to-fine gate degrades gracefully.} Table~\ref{tab:hierarchy}
-isolates the color/pattern groups the hierarchy governs. The coarse head alone is
-highly accurate ($96.3\%$ macro-averaged family accuracy), confirming that the
-family-level distinction (e.g.\ warm vs.\ cool color) is easy to ground even where
-the exact fine value is not. More importantly, when the fine head \emph{is}
-wrong, its prediction still lands in the correct coarse family $65.7\%$ of the
-time---well above chance for most of these groups' fine-value vocabularies---so a
-wrong concept explanation from this model is, on average, wrong in a small,
-nameable way (``a warm color, but not the exact one'') rather than arbitrarily.
-This is the interpretability benefit the coarse-to-fine design targets, and it is
-not visible in Table~\ref{tab:concepts}'s aggregate scores.
 
 \textbf{CRM helps only the uncertain, grounded models.} The severity-aware rule
 lowers severity on the part-conditioned model in \emph{both} regimes ($0.734
