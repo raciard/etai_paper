@@ -40,6 +40,23 @@
 
 %%
 \begin{abstract}
+Standard Concept Bottleneck Models (CBMs) suffer from two main limitations:
+they often deduce concepts through whole-image shortcuts rather than looking
+at the actual local evidence, and they treat all misclassifications as
+equally severe, ignoring the semantic hierarchies between classes. We
+address both issues in the context of fine-grained classification. To
+prevent the model from ``cheating'' via class-correlated information, we
+ground each concept prediction exclusively on a localized crop of the
+specific body part it refers to. Additionally, we introduce hierarchical
+structures to both the concept and label spaces, incorporating a
+WordNet-based metric to measure mistake severity alongside a post-hoc
+Conditional Risk Minimisation (CRM) decision rule. Our experiments on the
+CUB-200-2011 dataset show that while adding a coarse-to-fine concept
+hierarchy does not yield the expected benefits, part-conditioning
+significantly improves the reliability of the explanations, making them
+truly faithful to the visual evidence. Finally, the CRM rule proves to be an
+effective way to reduce mistake severity at test time with virtually no
+cost to overall accuracy.
 \end{abstract}
 
 %%
