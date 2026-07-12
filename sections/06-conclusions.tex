@@ -2,20 +2,22 @@
 We introduced hierarchical structure into a supervised CBM along two
 axes---part-grounded, coarse-to-fine concepts in the concept space, and a
 WordNet taxonomy with an LCA severity metric plus a post-hoc CRM decision rule
-in the label space---and evaluated all variants with a hierarchy-aware metric
-while keeping the backbone fixed. Compared with an unconstrained black-box, the
-concept bottleneck costs both accuracy and severity; this is the well-documented
-price of interpretability and sets the frame for interpreting our results.
-Within that frame, grounding each concept on its body part eliminates the
-prediction circularity of a whole-image bottleneck and, together with the
-concept hierarchy, strengthens faithfulness and interpretability without
-improving---and marginally hurting---accuracy and severity. The label-space
-decision rule, in turn, lowers mistake severity at test time at virtually no
-accuracy cost on most variants, provided the classifier it is layered onto
-gives it a reasonably faithful posterior to work with. These two forms of hierarchy thus
-serve complementary purposes and work best together: structuring the concepts
-improves interpretability, while structuring the label space yields
-semantically closer errors. Promising directions for future work include
-hierarchy-aware training losses, extending the coarse-to-fine scheme to
-attribute groups beyond colour and pattern, and pairing CRM with a
+in the label space. Compared with an unconstrained black-box, the concept
+bottleneck costs both accuracy and severity, the well-documented price of
+interpretability.
+
+The two concept-space changes do not pay off equally. Adding the
+coarse-to-fine concept hierarchy on top of part conditioning underperforms
+our expectations: it does not improve accuracy or severity over plain part
+conditioning (Table~\ref{tab:results}), and on the concept consistency test
+it is no better, and slightly worse, at landing on the exact edited colour
+(Table~\ref{tab:crown-intervention}). Part conditioning alone is the more
+promising direction: at a modest accuracy cost, it makes concepts far more
+consistent with the local evidence they name.
+
+CRM lowers mistake severity at test time at virtually no accuracy cost on
+most variants, provided the classifier it is layered onto gives it a
+reasonably faithful posterior. Future work: hierarchy-aware training losses,
+real part segmentation in place of keypoint-centred crops, a broader concept
+consistency test covering more attributes and edits, and pairing CRM with a
 hierarchically structured classifier head.
