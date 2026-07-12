@@ -37,19 +37,9 @@ per-part crops it produces.
 
 \begin{figure*}[t]
   \centering
-  \includegraphics[width=\textwidth]{part_crops}
-  \caption{The part-conditioned pipeline on a CUB-200-2011 test image (real
-  model output, not a diagram). \textbf{(a)} The frozen Keypoint R-CNN locates
-  each part (dot); the dashed rectangle is the bird's bounding box and each
-  coloured square is that part's crop region, sized as a fixed fraction of the
-  bounding-box diagonal. \textbf{(b)} The crops actually extracted -- one per
-  anatomical part plus a global crop of the whole bird -- each feeding only its
-  own concept head (e.g.\ the beak crop drives \emph{has\_bill\_shape},
-  \emph{has\_bill\_length} and \emph{has\_bill\_color}, with no access to the
-  wing or tail region). On this image all 12 parts were predicted visible; a
-  part the visibility model predicts absent would instead be marked
-  ``$\times$'' in (a), with its crop replaced by a learned embedding rather
-  than image content.}
+  \includegraphics[width=0.62\textwidth]{part_crops}
+  \caption{Part localisation (a) and the resulting per-part crops (b) on a
+  CUB-200-2011 test image.}
   \label{fig:part-crops}
 \end{figure*}
 
