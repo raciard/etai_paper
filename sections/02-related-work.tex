@@ -1,6 +1,6 @@
 \section{Related work}
 \textbf{Concept bottlenecks.} \citet{koh2020concept} introduced the
-image$\rightarrow$concepts$\rightarrow$class factorisation together with the
+image $\to$ concepts $\to$ class factorisation together with the
 concept-level interpretability and intervention it affords. Our concept layer
 follows their supervised, class-level attribute setup. Later analyses have shown,
 however, that concepts predicted from the full image are not always learned as
@@ -18,9 +18,9 @@ recognition through an explicit top-down decomposition. These works inform our
 part-grounded and coarse-to-fine concept design.
 
 \textbf{Hierarchy in the label space and better mistakes.}
-\citet{bertinetto2020making} formalise mistake severity via the LCA of the
-predicted and true class in a semantic hierarchy and propose hierarchy-aware
-training losses. \citet{karthik2021nocost} demonstrate that severity can be
+\citet{bertinetto2020making} formalise mistake severity via the lowest common
+ancestor (LCA) of the predicted and true class in a semantic hierarchy and
+propose hierarchy-aware training losses. \citet{karthik2021nocost} demonstrate that severity can be
 reduced purely at test time, without any retraining, by selecting the class of
 minimum expected risk---a mechanism they call Conditional Risk Minimisation
 (CRM), which we adopt for our label-space axis.

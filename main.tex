@@ -40,35 +40,6 @@
 
 %%
 \begin{abstract}
-Concept Bottleneck Models (CBMs) route predictions through human-interpretable
-concepts, yet both the concept layer and the label space are typically treated as
-flat sets, and evaluation reduces to accuracy alone---confusing two warblers
-counts the same as confusing a warbler with an albatross.
-We ask whether adding hierarchical structure to a supervised CBM can improve
-interpretability and error quality on CUB-200-2011 (200 bird species), even when
-raw accuracy does not increase.
-We introduce structure on two axes.
-On the \emph{concept} side, we (i)~predict each concept from the anatomical-part
-crop it describes, breaking the \emph{prediction circularity} that lets a
-whole-image encoder infer a concept from class-diagnostic shortcuts rather than
-local evidence, and (ii)~organise color/pattern attributes in a coarse-to-fine
-hierarchy.
-On the \emph{label} side, we map the 200 species onto a WordNet taxonomy,
-derive a Lowest-Common-Ancestor (LCA) severity metric, and apply a post-hoc
-decision rule that minimises expected severity without retraining.
-With the backbone fixed across all variants, an unconstrained black-box still
-beats every concept-based model on both accuracy and severity, confirming the
-known cost of the bottleneck.
-Within that budget the concept-space changes do not raise accuracy---and
-slightly increase severity---but they make the bottleneck faithful: concept-level
-evaluation shows that the flat model's higher apparent concept scores partly
-stem from the same class-correlated shortcuts that inflate its species accuracy,
-rather than from genuinely grounded evidence.
-The label-space rule, meanwhile, lowers severity at negligible accuracy cost for
-most concept-based variants, provided the classifier's posterior is reliable
-enough for a severity-weighted re-ranking to trust in the first place.
-Taken together, the two forms of hierarchy benefit error quality and
-interpretability rather than accuracy, and they are best combined.
 \end{abstract}
 
 %%
