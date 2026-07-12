@@ -1,17 +1,21 @@
 \section{Conclusions}
-We added structure to a supervised CBM along two axes---part-grounded,
-coarse-to-fine concepts in the concept space, and a WordNet taxonomy with an LCA
-severity metric and a post-hoc CRM decision in the label space---and evaluated
-with a hierarchy-aware metric while holding capacity fixed. Against an
-unconstrained black-box the concept bottleneck costs both accuracy and severity---%
-the documented price of interpretability---which sets the frame for our results:
-grounding each concept on its part breaks the prediction circularity of a
-whole-image bottleneck and, together with the concept hierarchy, improves
-faithfulness and interpretability without improving (and slightly costing)
-accuracy and severity, whereas the calibrated label-space rule lowers mistake
-severity for free at test time on the part-grounded models. The practical
-takeaway is that these two forms of hierarchy serve different ends and are best
-combined: structure the concepts for interpretability, and structure the label
-space for better mistakes. Future work includes hierarchy-aware training losses,
-extending the coarse-to-fine scheme beyond color and pattern, and pairing CRM
-with a hierarchically-structured classifier head.
+We introduced hierarchical structure into a supervised CBM along two
+axes---part-grounded, coarse-to-fine concepts in the concept space, and a
+WordNet taxonomy with an LCA severity metric plus a post-hoc CRM decision rule
+in the label space---and evaluated all variants with a hierarchy-aware metric
+while keeping the backbone fixed. Compared with an unconstrained black-box, the
+concept bottleneck costs both accuracy and severity; this is the well-documented
+price of interpretability and sets the frame for interpreting our results.
+Within that frame, grounding each concept on its body part eliminates the
+prediction circularity of a whole-image bottleneck and, together with the
+concept hierarchy, strengthens faithfulness and interpretability without
+improving---and marginally hurting---accuracy and severity. The label-space
+decision rule, in turn, lowers mistake severity at test time at virtually no
+accuracy cost on most variants, provided the classifier it is layered onto
+gives it a reasonably faithful posterior to work with. These two forms of hierarchy thus
+serve complementary purposes and work best together: structuring the concepts
+improves interpretability, while structuring the label space yields
+semantically closer errors. Promising directions for future work include
+hierarchy-aware training losses, extending the coarse-to-fine scheme to
+attribute groups beyond colour and pattern, and pairing CRM with a
+hierarchically structured classifier head.
