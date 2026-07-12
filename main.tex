@@ -64,7 +64,9 @@ slightly increase severity---but they make the bottleneck faithful: concept-leve
 evaluation shows that the flat model's higher apparent concept scores partly
 stem from the same class-correlated shortcuts that inflate its species accuracy,
 rather than from genuinely grounded evidence.
-The label-space rule, meanwhile, lowers severity at negligible accuracy cost.
+The label-space rule, meanwhile, lowers severity at negligible accuracy cost for
+most concept-based variants, provided the classifier's posterior is reliable
+enough for a severity-weighted re-ranking to trust in the first place.
 Taken together, the two forms of hierarchy benefit error quality and
 interpretability rather than accuracy, and they are best combined.
 \end{abstract}

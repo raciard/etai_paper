@@ -1,4 +1,5 @@
 \section{Methodology}
+\label{sec:methodology}
 \textbf{Setup.} We work on CUB-200-2011~\cite{wah2011caltech} (200 species,
 bounding-box crops). The concepts are the class-level attributes obtained with
 the procedure of \citet{koh2020concept}: the noisy instance-level CUB attributes
@@ -73,9 +74,8 @@ so correct predictions contribute nothing and the score captures both how often
 the model errs and how far its errors fall in the taxonomy (lower is better).
 
 \textbf{Severity-aware decision (CRM).} The same cost drives the decision rule.
-Let $p(c\mid x)$ be the model's posterior over the $C{=}200$ classes, obtained by
-applying a softmax with temperature $T$ (tuned on a held-out validation set) to
-the species logits. Instead of the arg\,max, CRM~\cite{karthik2021nocost}
+Let $p(c\mid x)$ be the model's raw ($T{=}1$) softmax posterior over the
+$C{=}200$ classes. Instead of the arg\,max, CRM~\cite{karthik2021nocost}
 returns the class of minimum \emph{expected} severity:
 \begin{equation}
   \hat{y}_{\mathrm{CRM}}
@@ -83,8 +83,13 @@ returns the class of minimum \emph{expected} severity:
   \label{eq:crm}
 \end{equation}
 so that, when the model is uncertain, it favours a class that is taxonomically
-close to the likely candidates. CRM is fully post-hoc and requires no
-retraining.
+close to the likely candidates. Following \citet{karthik2021nocost}'s own
+formulation, we apply CRM directly to $p(c\mid x)$ with no extra
+hyperparameter: it is fully post-hoc, requires no retraining, and needs no
+tuning---provided $p(c\mid x)$ is a reasonably reliable likelihood estimate.
+Section~\ref{sec:experiments} reports one case where a training artefact broke
+that assumption, and the limited effect of restoring it with a
+validation-calibrated temperature instead.
 
 \textbf{Metrics.} At the species level we report top-1 accuracy and the mistake
 severity of Eq.~\eqref{eq:sev} (lower is better), which measures how
