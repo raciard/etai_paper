@@ -10,11 +10,9 @@ concept layer in isolation, without the species classifier built on top of it.
   \centering
   \footnotesize
   \setlength{\tabcolsep}{4pt}
-  \caption{Top-1 accuracy (\%, higher is better) and average WordNet mistake
-  severity of Eq.~\eqref{eq:sev} (lower is better) on the CUB-200-2011 test set
-  ($5{,}794$ images), under the arg\,max and CRM decision rules. The black-box
-  (no bottleneck) is the reference; the concept-based variants are shown for the
-  independent and sequential classifier.}
+  \caption{Top-1 accuracy and mean WordNet mistake severity
+  (Eq.~\eqref{eq:sev}, lower is better) on the CUB-200-2011 test set, under
+  arg\,max and CRM.}
   \label{tab:results}
   \begin{tabular}{llcccc}
     \toprule
@@ -58,13 +56,9 @@ concepts.
   \centering
   \footnotesize
   \setlength{\tabcolsep}{4pt}
-  \caption{Semantic mistake-severity breakdown, under both decision rules (test
-  set, $5{,}794$ images). Sev.\ (err.) is the mean severity of Eq.~\eqref{eq:sev}
-  computed only over the misclassified examples, decomposing Table~\ref{tab:results}'s
-  severity into how often the model errs (its accuracy) and how bad each error is.
-  Same-genus / Same-family / Far report the share of \emph{errors} whose LCA height
-  is $1$ / $2$ / $\geq 3$ respectively, following the mistake-severity bucketing of
-  \citet{bertinetto2020making}.}
+  \caption{Mistake-severity breakdown. Sev.\ (err.) is severity computed only
+  over misclassified examples; Same-genus/Same-family/Far are the share of
+  errors with LCA height $1$/$2$/$\geq 3$ \citep{bertinetto2020making}.}
   \label{tab:severity-breakdown}
   \begin{tabular}{llcccccccc}
     \toprule
@@ -137,10 +131,8 @@ interpretability benefit not visible in accuracy numbers.
 \begin{table}[h]
   \centering
   \footnotesize
-  \caption{Concept-level prediction quality on the CUB-200-2011 test set: binary
-  accuracy and macro-averaged $F_1$ over the $109$ class-level attributes, for
-  each concept encoder alone (independent of which species classifier is later
-  built on top of it).}
+  \caption{Concept-level accuracy and macro-$F_1$ over the $109$ attributes,
+  for each concept encoder alone.}
   \label{tab:concepts}
   \begin{tabular}{lccc}
     \toprule
