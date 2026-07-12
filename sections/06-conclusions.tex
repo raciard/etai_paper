@@ -9,9 +9,10 @@ price of interpretability and sets the frame for interpreting our results.
 Within that frame, grounding each concept on its body part eliminates the
 prediction circularity of a whole-image bottleneck and, together with the
 concept hierarchy, strengthens faithfulness and interpretability without
-improving---and marginally hurting---accuracy and severity. The calibrated
-label-space rule, in turn, lowers mistake severity at test time at virtually no
-accuracy cost on the part-grounded models. These two forms of hierarchy thus
+improving---and marginally hurting---accuracy and severity. The label-space
+decision rule, in turn, lowers mistake severity at test time at virtually no
+accuracy cost on most variants, provided the classifier it is layered onto
+gives it a reasonably faithful posterior to work with. These two forms of hierarchy thus
 serve complementary purposes and work best together: structuring the concepts
 improves interpretability, while structuring the label space yields
 semantically closer errors. Promising directions for future work include
